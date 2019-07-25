@@ -1,4 +1,4 @@
-function [lifetime]=lifetime(x,dec,M,mu,a0,e0,R,H,alpha,Md,sigma,cs)
+function [lifetime]=lifetime(x,dec,M,mu,m1,q,a0,e0,alpha,sigma,cs)
 %eccentricity evolution for different initial eccentricities with fixed
 %initial semi-major axis
 
@@ -27,7 +27,9 @@ end
 if dec == 3
 options = odeset('RelTol',1e-5,'events',@events);
 end
-[tv,Yv]=ode23tb(@(t,y) funsys_2(t,y,x,G,c,M,mu,H,R,alpha,Md,sigma,cs),[0 1e20],[a0;e0],options);
+
+
+[tv,Yv]=ode23tb(@(t,y) funsys_2(t,y,x,G,c,M,mu,m1,q,alpha,sigma,cs),[0 1e20],[a0;e0],options);
 txt = ['Initial e_0  ',num2str(e0)];
 
 if x==0
@@ -37,6 +39,10 @@ end
 
 plot(tv/31536000,Yv(:,1),'-','color',cc(i,:),'DisplayName',txt);
 plot(tv/31536000,Yv(:,2),'-','color',cc(i,:),'DisplayName',txt);
+semilogy(Yv(:,2),Yv(:,1)/149597870700)
+% vpericenter = sqrt(G*m1./(Yv(:,1)).*((1+Yv(:,2))./(1-Yv(:,2))));
+% relperispeed = vpericenter/c;
+% plot(tv/31536000,relperispeed,'--o')
 lifetime = tv(end)/31536000;
 if dec==1
     lifetime = tv(end)/31536000;
@@ -46,6 +52,9 @@ if dec==2
 end
 if dec==3
     lifetime = Yv(end,1);
+end
+if dec==4
+    lifetime = max(Yv(:,2));
 end
 xlabel({'Time','years'})
 ylabel('Eccentricity')
@@ -57,7 +66,7 @@ grid
  
 
 function [value,isterminal,direction] = events(t,Y)
-  value = (G^3/c^5 * 64/5 * (mu*M^2)/Y(1)^3 * 1/(1-Y(2)^2)^(7/2) *( 1 + 73/24 * Y(2)^2 + 37/96 * Y(2)^4)) - 24*pi*alpha*Y(1)*sigma*cs^2 / (mu*sqrt(G*M/(Y(1)^3))); 
+  value = (G^3/c^5 * 64/5 * (mu*M^2)/Y(1)^3 * 1/(1-Y(2)^2)^(7/2) *( 1 + 73/24 * Y(2)^2 + 37/96 * Y(2)^4)) - 2*Y(1)/(mu*sqrt(G*M/(Y(1)^3))*Y(1)^2)*(12*pi*Y(1)^2*alpha*sigma*cs^2*(1+Y(2))^2); 
   isterminal = 1;
   direction = 0;
 end

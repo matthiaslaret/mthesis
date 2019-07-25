@@ -1,10 +1,12 @@
 function orbit_evolution
 
 %parameters binary
-M = 14*2e30; % total binary mass in solarmasses
+M = 50*2e30; % total binary mass in solarmasses
 mu = M/4; % reduced mass (mass ratio = 1)
+m1 = 0;
+q=0;
 
-a0 = 20*149597870700; % in AU
+a0 = 10*149597870700; % in AU
 e0 = 0.3;
 
 %Hulse-Taylor
@@ -14,11 +16,7 @@ e0 = 0.3;
 % M = 2.8*2e30;
 
 %parameters disk
-R = 100*a0;   % disk radius
-H = 0.1 * R; % disk height
-H = 10*149597870700; % in AU
 alpha = 1*1e-2;   % viscosity parameter 
-Md = 50*2e30; % disk  mass in solarmasses
 sigma = 2e+04; % surface density kg/m^2
 cs = 0.05 * 0.5 * 200e3; %sound speed
 
@@ -27,42 +25,55 @@ cs = 0.05 * 0.5 * 200e3; %sound speed
 % % as a function of eccentricity
 % =======================================
 % =======================================
-e0=linspace(0.01,0.98,2);
+e0=linspace(0.01,0.98,50);
 
 dec=0;
 x=0;
-
 for i=1:length(e0)
-lifetimes_0(i) = lifetime(x,dec,M,mu,a0,e0(i),R,H,alpha,Md,sigma,cs);
+    lifetimes_0(i) = lifetime(x,dec,M,mu,m1,q,a0,e0(i),alpha,sigma,cs);
 end
 
 x=1;
 for i=1:length(e0)
-lifetimes_gas(i) = lifetime(x,dec,M,mu,a0,e0(i),R,H,alpha,Md,sigma,cs);
+    lifetimes_gas(i) = lifetime(x,dec,M,mu,m1,q,a0,e0(i),alpha,sigma,cs);
 end
 
 dec=1;
 for i=1:length(e0)
-timeofdec(i) = lifetime(x,dec,M,mu,a0,e0(i),R,H,alpha,Md,sigma,cs);
+    timeofdec(i) = lifetime(x,dec,M,mu,m1,q,a0,e0(i),alpha,sigma,cs);
 end
 
 dec=2;
 for i=1:length(e0)
-eccatdec(i) = lifetime(x,dec,M,mu,a0,e0(i),R,H,alpha,Md,sigma,cs);
+eccatdec(i) = lifetime(x,dec,M,mu,m1,q,a0,e0(i),alpha,sigma,cs);
 end
 
-dec=3;
+
+% dec=3;
+% for i=1:length(e0)
+% aatdec(i) = lifetime(x,dec,M,mu,a0,e0(i),R,H,alpha,Md,sigma,cs);
+% end
+
+dec=4;
 for i=1:length(e0)
-aatdec(i) = lifetime(x,dec,M,mu,a0,e0(i),R,H,alpha,Md,sigma,cs);
+maxecc(i) = lifetime(x,dec,M,mu,m1,q,a0,e0(i),alpha,sigma,cs);
 end
-
 
 %comparison GW vs GW+disk
-semilogy(e0,lifetimes_0,e0,lifetimes_gas,e0,lifetimes_gas - timeofdec,'Marker','.','MarkerSize',20,'Linewidth',3);
+semilogy(e0,lifetimes_0,e0,lifetimes_gas,'Marker','.','MarkerSize',20,'Linewidth',3);
 grid
-legend('GW-driven merger time', '(GW + Disk)-driven merger time','Merger time from Decoupling')
+legend('GW-driven merger time', '(GW + Disk)-driven merger time')
 xlabel('Initial Eccentricity','FontSize',18,'FontWeight','bold')
 ylabel('Time [years]','FontSize',18,'FontWeight','bold');
+txt = ['Binary Mass = ',num2str(M/2e30),' SM; \mu = ',num2str(mu/2e30),' SM; Initial a = ',num2str(a0/149597870700),' AU; sound speed c_s = ',num2str(cs/1000),' km/s; CBD \Sigma = ',num2str(sigma),' kg/m^2; \alpha = ',num2str(alpha)];
+title(txt)
+
+%comparison emax,edec
+loglog(e0,eccatdec,e0,maxecc,'Marker','.','MarkerSize',20,'Linewidth',3);
+grid
+legend('Eccentricity at decoupling', 'Maximum eccenticity')
+xlabel('Initial Eccentricity','FontSize',18,'FontWeight','bold')
+ylabel('Eccentricity','FontSize',18,'FontWeight','bold');
 txt = ['Binary Mass = ',num2str(M/2e30),' SM; \mu = ',num2str(mu/2e30),' SM; Initial a = ',num2str(a0/149597870700),' AU; sound speed c_s = ',num2str(cs/1000),' km/s; CBD \Sigma = ',num2str(sigma),' kg/m^2; \alpha = ',num2str(alpha)];
 title(txt)
 
