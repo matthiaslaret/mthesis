@@ -14,11 +14,11 @@ Msmbh = 1e8 * SM ;
 gamma = 1.5;
 beta = 3.2;
 
-Ntotalgal = 1e4;
+Ntotalgal = 1e6;
 fb = 0.01; %binary fraction
 fd = 0.01; % down to disk fraction
 
-alpha = 0.01;
+alpha = 0.1;
 aspectratio = 0.01;
 sigma = ( Msmbh/(3.7e15) )^(1/4.38) ; %velocity dispersion m/s, using sigma-M relation
 fg = 0.1; %gas surface density divided by total surface density
@@ -33,9 +33,9 @@ Rmin = 100*SSR; %inner radius of AGN
 Rmax = 1*pc; %outer radius of AGN
 
 % STELlAR MASS
-msmax = 50000*SM; %max stellar mass
+msmax = 200*SM; %max stellar mass
 msmin = 0.01*SM; %min stellar mass
-mscr = 5 * SM; % critical stellat mass
+mscr = 5 * SM; % critical stellar mass
 
 % BH MASS
 mbhmax = 50 * SM; %max BH mass
@@ -66,10 +66,10 @@ Ie = 10; %number of orbital ecentricity bins
 %
 %% PARAMETERS, NO INPUT
 
-k0 = Ntotalgal/SM/((0.56 - 1/(0.7)*(mscr/SM)^(0.7) - 0.04/(1.3)*(msmax/SM)^(-1.3) ));
+k0 = Ntotalgal/SM/((0.56 - 1/(0.7)*(msmin/SM)^(0.7) - 0.04/(1.3)*(msmax/SM)^(-1.3) ));
 Mtot = k0*SM^2*(0.22 - 1/(1.7)*(msmin/SM)^(1.7) - 0.04/(0.3)*(msmax/SM)^(-0.3) );
 rho0 = Mtot/(4*pi*rb^3) * (1/(3-gamma) - 1/(3-beta) )^(-1) ;  
-k = 1/SM * (0.56 - 1/(0.7)*(mscr/SM)^(0.7) - 0.04/(1.3)*(msmax/SM)^(-1.3) )/(0.22 - 1/(1.7)*(msmin/SM)^(1.7) - 0.04/(0.3)*(msmax/SM)^(-0.3) );
+k = 1/SM * (- 0.04/(1.3)* ((msmax/SM)^(-1.3) - (mscr/SM)^(-1.3) ))/(0.22 - 1/(1.7)*(msmin/SM)^(1.7) - 0.04/(0.3)*(msmax/SM)^(-0.3) );
 xi0 = - 1.35 /(mbhmax^(-1.35) - mbhmin^(-1.35));
 
 
@@ -91,7 +91,7 @@ r1 = Rmin + ll*delr;
 r2 = Rmin + (ll+1)*delr; 
 r = Rmin + ll*delr + 0.5*delr ; %average radius of [r1,r2]
 
-[ratesshell,mrgtimesshell] = rates_radialshell(r1,r2,r)
+[ratesshell,mrgtimesshell] = rates_radialshell(r1,r2,r);
 totalrate = [totalrate ratesshell];
 totalmrgtimes = [totalmrgtimes, mrgtimesshell];
 
@@ -100,6 +100,7 @@ end
 MERGERTIME_AVERAGE = mean(totalmrgtimes)
 MERGERTIME_MEDIAN = median(totalmrgtimes)
 RATE = sum(totalrate)
+save('data.txt','MERGERTIME_AVERAGE','MERGERTIME_MEDIAN','RATE','-ascii')
 
 %
 %% MERGER RATE FOR RADIAL SHELL [r1,r2]
@@ -165,6 +166,7 @@ mrgtimes = [];
 contr = [];
 for i=1:Im
     m1 = m(i);
+    [r/Rmax,i]
     for j=1:Iq
         q1 = q(j);
         Mbin = m1 + m1*q1;
@@ -173,7 +175,6 @@ for i=1:Im
             a0 = a(l);
 %             a0 = 20*149597870700;
             for n=1:Ie
-                [r/Rmax,i,j,l,n]
                 e0 = e(n);
 %                 e0 = 0.001;
                 
