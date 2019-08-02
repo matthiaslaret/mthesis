@@ -56,11 +56,11 @@ e0max = 0.95;
 %
 %% PARTITIONS
 
-Ir = 10; %numer of radial bins
-Im = 10; %number of mass bins
-Iq = 10; %number of mass ratio bins
-Ia = 10; %number of orbital separation bins
-Ie = 10; %number of orbital ecentricity bins
+Ir = 1; %numer of radial bins
+Im = 1; %number of mass bins
+Iq = 1; %number of mass ratio bins
+Ia = 1; %number of orbital separation bins
+Ie = 1; %number of orbital ecentricity bins
 
 
 %
@@ -100,7 +100,9 @@ end
 MERGERTIME_AVERAGE = mean(totalmrgtimes)
 MERGERTIME_MEDIAN = median(totalmrgtimes)
 RATE = sum(totalrate)
-save('data.txt','MERGERTIME_AVERAGE','MERGERTIME_MEDIAN','RATE','-ascii')
+
+filename = strcat(datestr(now, 'dd_mm_yy_HH_MM'),'.mat'); 
+save(filename)
 
 %
 %% MERGER RATE FOR RADIAL SHELL [r1,r2]
