@@ -1,4 +1,4 @@
-function rates_galaxy
+function rates_galaxy(Ir,Im,Iq,Ia,Ie)
 
 %% CONSTANTS
 SM = 2e30; %Solar Mass
@@ -56,11 +56,11 @@ e0max = 0.95;
 %
 %% PARTITIONS
 
-Ir = 1; %numer of radial bins
-Im = 1; %number of mass bins
-Iq = 1; %number of mass ratio bins
-Ia = 1; %number of orbital separation bins
-Ie = 1; %number of orbital ecentricity bins
+%Ir = 5; %numer of radial bins
+%Im = 5; %number of mass bins
+%Iq = 5; %number of mass ratio bins
+%Ia = 5; %number of orbital separation bins
+%Ie = 5; %number of orbital ecentricity bins
 
 
 %
@@ -193,5 +193,4 @@ mergerrate = sum(contr)/((NBBH)^3);
 plot(mrgtimes,'o');
 
 end
-keyboard
 end
